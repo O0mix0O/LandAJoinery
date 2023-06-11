@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CalculatorSelector = ({ onAddCalculator }) => {
+const CalculatorInterface = ({ onAddCalculator }) => {
   const [selectedCalculator, setSelectedCalculator] = useState('');
   const [quantities, setQuantities] = useState({});
   const [grandTotal, setGrandTotal] = useState(0);
@@ -101,4 +101,4 @@ const CalculatorSelector = ({ onAddCalculator }) => {
   );
 };
 
-export default CalculatorSelector;
+export default CalculatorInterface;

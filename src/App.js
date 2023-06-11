@@ -1,16 +1,16 @@
 import './App.css';
-import CalculatorSelector from './CalculatorInterface';
+import CalculatorInterface from './CalculatorInterface';
 
 function App() {
   const handleAddCalculator = (calculator) => {
     // Add the logic to handle the calculator addition here
     console.log(`Adding calculator: ${calculator}`);
   };
-  
+
   return (
     <div className="App">
       <header className="App-header">
-      <CalculatorSelector onAddCalculator={handleAddCalculator} />
+      <CalculatorInterface onAddCalculator={handleAddCalculator} />
     </header>
     </div>
   );
