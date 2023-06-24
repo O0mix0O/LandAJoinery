@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CalculateDoors from './CalculateDoors';
+import CalculateDoors from './CostCalculators/doorCostCalculator';
 
 const DoorCalculator = () => {
   const [numDoors, setNumDoors] = useState(1);

@@ -1,6 +1,4 @@
-const CalculateDoors = (numberOfDoors) => {
-  //const [numDoors, setNumDoors] = useState(1);
-  //const [totalCost, setTotalCost] = useState(0);
+const DoorCostCalculator = (numberOfDoors) => {
 
   const calculateCost = () => {
     const nailsCost = numberOfDoors * 4 * 0.9;
@@ -13,7 +11,7 @@ const CalculateDoors = (numberOfDoors) => {
     return total;
   };
 
-  return calculateCost;
+  return calculateCost();
 };
 
-export default CalculateDoors;
+export default DoorCostCalculator;

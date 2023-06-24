@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import DoorCostCalculator from "./CostCalculators/doorCostCalculator";
+import windowCostCalculator from "./CostCalculators/windowCostCalculator";
 
 const CalculatorInterface = ({ onAddCalculator }) => {
-  const [selectedCalculator, setSelectedCalculator] = useState('');
+  const [selectedCalculator, setSelectedCalculator] = useState("");
   const [quantities, setQuantities] = useState({});
   const [grandTotal, setGrandTotal] = useState(0);
-  const [availableCalculators, setAvailableCalculators] = useState(['door', 'window']);
+  const [availableCalculators, setAvailableCalculators] = useState([
+    "door",
+    "window",
+  ]);
 
   const handleCalculatorChange = (e) => {
     setSelectedCalculator(e.target.value);
   };
 
   const handleAddCalculator = () => {
-    if (selectedCalculator !== '') {
+    if (selectedCalculator !== "") {
       setQuantities((prevQuantities) => {
         return { ...prevQuantities, [selectedCalculator]: 0 };
       });
-      setSelectedCalculator('');
-      setAvailableCalculators((prevCalculators) => prevCalculators.filter((c) => c !== selectedCalculator));
+      setSelectedCalculator("");
+      setAvailableCalculators((prevCalculators) =>
+        prevCalculators.filter((c) => c !== selectedCalculator)
+      );
     }
   };
 
@@ -25,10 +32,13 @@ const CalculatorInterface = ({ onAddCalculator }) => {
     setQuantities(updatedQuantities);
 
     // Recalculate the grand total
-    const total = Object.entries(updatedQuantities).reduce((acc, [calc, qty]) => {
-      const cost = calculateCost(calc, qty);
-      return acc + cost;
-    }, 0);
+    const total = Object.entries(updatedQuantities).reduce(
+      (acc, [calc, qty]) => {
+        const cost = calculateCost(calc, qty);
+        return acc + cost;
+      },
+      0
+    );
     setGrandTotal(total);
   };
 
@@ -38,27 +48,27 @@ const CalculatorInterface = ({ onAddCalculator }) => {
     setQuantities(updatedQuantities);
 
     // Recalculate the grand total
-    const total = Object.entries(updatedQuantities).reduce((acc, [calc, qty]) => {
-      const cost = calculateCost(calc, qty);
-      return acc + cost;
-    }, 0);
+    const total = Object.entries(updatedQuantities).reduce(
+      (acc, [calc, qty]) => {
+        const cost = calculateCost(calc, qty);
+        return acc + cost;
+      },
+      0
+    );
     setGrandTotal(total);
 
-    setAvailableCalculators((prevCalculators) => [...prevCalculators, calculator]);
+    setAvailableCalculators((prevCalculators) => [
+      ...prevCalculators,
+      calculator,
+    ]);
   };
 
   const calculateCost = (calculator, quantity) => {
     // Define the cost calculation logic for each calculator type
-    if (calculator === 'door') {
-      // Cost calculation for doors
-      // ...
-      // Replace this with your actual door cost calculation logic
-      return quantity * 100; // Placeholder cost calculation
-    } else if (calculator === 'window') {
-      // Cost calculation for windows
-      // ...
-      // Replace this with your actual window cost calculation logic
-      return quantity * 150; // Placeholder cost calculation
+    if (calculator === "door") {
+      return DoorCostCalculator(quantity);
+    } else if (calculator === "window") {
+      return windowCostCalculator(quantity);
     }
     return 0;
   };
@@ -68,11 +78,15 @@ const CalculatorInterface = ({ onAddCalculator }) => {
       <h2>Calculator Selector</h2>
       <div>
         <label htmlFor="calculator">Select Calculator: </label>
-        <select id="calculator" value={selectedCalculator} onChange={handleCalculatorChange}>
+        <select
+          id="calculator"
+          value={selectedCalculator}
+          onChange={handleCalculatorChange}
+        >
           <option value="">Select</option>
           {availableCalculators.map((calculator) => (
             <option key={calculator} value={calculator}>
-              {calculator === 'door' ? 'Door Calculator' : 'Window Calculator'}
+              {calculator === "door" ? "Door Calculator" : "Window Calculator"}
             </option>
           ))}
         </select>
@@ -85,13 +99,15 @@ const CalculatorInterface = ({ onAddCalculator }) => {
       <ul>
         {Object.entries(quantities).map(([calculator, quantity]) => (
           <li key={calculator}>
-            {calculator} Calculator - Quantity:{' '}
+            {calculator} Calculator - Quantity:{" "}
             <input
               type="number"
               value={quantity}
               onChange={(e) => handleQuantityChange(calculator, e.target.value)}
             />
-            <button onClick={() => handleRemoveCalculator(calculator)}>Remove</button>
+            <button onClick={() => handleRemoveCalculator(calculator)}>
+              Remove
+            </button>
           </li>
         ))}
       </ul>
