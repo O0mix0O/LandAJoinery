@@ -24,7 +24,9 @@ const CalculatorInterface = () => {
   };
 
   const handleQuantityChange = (event, calculator) => {
-    const quantity = parseInt(event.target.value, 10) || 0;
+    let quantity = parseInt(event.target.value, 10) || 0;
+    quantity = Math.max(quantity, 0); // Set the minimum value to 0
+
     setProductQuantities({
       ...productQuantities,
       [calculator]: quantity,
