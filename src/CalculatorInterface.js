@@ -29,22 +29,14 @@ const CalculatorInterface = () => {
       ...productQuantities,
       [calculator]: quantity,
     });
-  };
 
-  const handleCalculate = () => {
-    const calculatedCosts = {};
+    const calculatedCosts = { ...totalCosts };
 
-    selectedCalculators.forEach((calculator) => {
-      let total = 0;
-
-      if (calculator === "door") {
-        total = DoorCostCalculator(productQuantities[calculator]);
-      } else if (calculator === "window") {
-        total = WindowCostCalculator(productQuantities[calculator]);
-      }
-
-      calculatedCosts[calculator] = total;
-    });
+    if (calculator === "door") {
+      calculatedCosts[calculator] = DoorCostCalculator(quantity);
+    } else if (calculator === "window") {
+      calculatedCosts[calculator] = WindowCostCalculator(quantity);
+    }
 
     setTotalCosts(calculatedCosts);
     calculateGrandTotal(calculatedCosts);
@@ -130,10 +122,7 @@ const CalculatorInterface = () => {
       </select>
 
       {selectedCalculators.length > 0 && (
-        <div>
-          {renderSelectedCalculators()}
-          <button onClick={handleCalculate}>Calculate</button>
-        </div>
+        <div>{renderSelectedCalculators()}</div>
       )}
 
       {Object.keys(totalCosts).length > 0 && (
