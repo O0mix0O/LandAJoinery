@@ -1,118 +1,146 @@
 import React, { useState } from "react";
 import DoorCostCalculator from "./CostCalculators/doorCostCalculator";
-import windowCostCalculator from "./CostCalculators/windowCostCalculator";
+import WindowCostCalculator from "./CostCalculators/windowCostCalculator";
 
-const CalculatorInterface = ({ onAddCalculator }) => {
-  const [selectedCalculator, setSelectedCalculator] = useState("");
-  const [quantities, setQuantities] = useState({});
-  const [grandTotal, setGrandTotal] = useState(0);
+const CalculatorInterface = () => {
+  const [selectedCalculators, setSelectedCalculators] = useState([]);
   const [availableCalculators, setAvailableCalculators] = useState([
-    "door",
-    "window",
+    { value: "door", label: "Door Calculator" },
+    { value: "window", label: "Window Calculator" },
   ]);
+  const [productQuantities, setProductQuantities] = useState({});
+  const [totalCosts, setTotalCosts] = useState({});
+  const [grandTotal, setGrandTotal] = useState(0);
 
-  const handleCalculatorChange = (e) => {
-    setSelectedCalculator(e.target.value);
-  };
+  const handleCalculatorChange = (event) => {
+    const selectedCalculator = event.target.value;
 
-  const handleAddCalculator = () => {
-    if (selectedCalculator !== "") {
-      setQuantities((prevQuantities) => {
-        return { ...prevQuantities, [selectedCalculator]: 0 };
-      });
-      setSelectedCalculator("");
-      setAvailableCalculators((prevCalculators) =>
-        prevCalculators.filter((c) => c !== selectedCalculator)
-      );
-    }
-  };
-
-  const handleQuantityChange = (calculator, quantity) => {
-    const updatedQuantities = { ...quantities, [calculator]: quantity };
-    setQuantities(updatedQuantities);
-
-    // Recalculate the grand total
-    const total = Object.entries(updatedQuantities).reduce(
-      (acc, [calc, qty]) => {
-        const cost = calculateCost(calc, qty);
-        return acc + cost;
-      },
-      0
+    setSelectedCalculators([...selectedCalculators, selectedCalculator]);
+    setAvailableCalculators((prevOptions) =>
+      prevOptions.filter((option) => option.value !== selectedCalculator)
     );
-    setGrandTotal(total);
+
+    event.target.value = ""; // Reset the dropdown to the default value
   };
 
-  const handleRemoveCalculator = (calculator) => {
-    const updatedQuantities = { ...quantities };
+  const handleQuantityChange = (event, calculator) => {
+    const quantity = parseInt(event.target.value, 10) || 0;
+    setProductQuantities({
+      ...productQuantities,
+      [calculator]: quantity,
+    });
+  };
+
+  const handleCalculate = () => {
+    const calculatedCosts = {};
+
+    selectedCalculators.forEach((calculator) => {
+      let total = 0;
+
+      if (calculator === "door") {
+        total = DoorCostCalculator(productQuantities[calculator]);
+      } else if (calculator === "window") {
+        total = WindowCostCalculator(productQuantities[calculator]);
+      }
+
+      calculatedCosts[calculator] = total;
+    });
+
+    setTotalCosts(calculatedCosts);
+    calculateGrandTotal(calculatedCosts);
+  };
+
+  const removeCalculator = (calculator) => {
+    const updatedCalculators = selectedCalculators.filter(
+      (selectedCalculator) => selectedCalculator !== calculator
+    );
+    setSelectedCalculators(updatedCalculators);
+    const updatedQuantities = { ...productQuantities };
     delete updatedQuantities[calculator];
-    setQuantities(updatedQuantities);
+    setProductQuantities(updatedQuantities);
 
-    // Recalculate the grand total
-    const total = Object.entries(updatedQuantities).reduce(
-      (acc, [calc, qty]) => {
-        const cost = calculateCost(calc, qty);
-        return acc + cost;
-      },
-      0
+    const removedCalculator = availableCalculators.find(
+      (option) => option.value === calculator
     );
-    setGrandTotal(total);
 
-    setAvailableCalculators((prevCalculators) => [
-      ...prevCalculators,
-      calculator,
-    ]);
+    if (!removedCalculator) {
+      setAvailableCalculators((prevOptions) => [
+        ...prevOptions,
+        {
+          value: calculator,
+          label: getCalculatorName(calculator) + " Calculator",
+        },
+      ]);
+    }
+
+    const updatedTotalCosts = { ...totalCosts };
+    delete updatedTotalCosts[calculator];
+    setTotalCosts(updatedTotalCosts);
+
+    calculateGrandTotal(updatedTotalCosts);
   };
 
-  const calculateCost = (calculator, quantity) => {
-    // Define the cost calculation logic for each calculator type
-    if (calculator === "door") {
-      return DoorCostCalculator(quantity);
-    } else if (calculator === "window") {
-      return windowCostCalculator(quantity);
+  const calculateGrandTotal = (costs) => {
+    const total = Object.values(costs).reduce((acc, val) => acc + val, 0);
+    setGrandTotal(total);
+  };
+
+  const renderSelectedCalculators = () => {
+    return selectedCalculators.map((calculator) => {
+      return (
+        <div key={calculator}>
+          <h3>{getCalculatorName(calculator)} Calculator</h3>
+          <label>Quantity:</label>
+          <input
+            type="number"
+            value={productQuantities[calculator] || ""}
+            onChange={(event) => handleQuantityChange(event, calculator)}
+          />
+          <p>Total Cost: ${totalCosts[calculator]}</p>
+          <button onClick={() => removeCalculator(calculator)}>
+            Remove Calculator
+          </button>
+        </div>
+      );
+    });
+  };
+
+  const getCalculatorName = (calculator) => {
+    switch (calculator) {
+      case "door":
+        return "Door";
+      case "window":
+        return "Window";
+      default:
+        return "";
     }
-    return 0;
   };
 
   return (
     <div>
-      <h2>Calculator Selector</h2>
-      <div>
-        <label htmlFor="calculator">Select Calculator: </label>
-        <select
-          id="calculator"
-          value={selectedCalculator}
-          onChange={handleCalculatorChange}
-        >
-          <option value="">Select</option>
-          {availableCalculators.map((calculator) => (
-            <option key={calculator} value={calculator}>
-              {calculator === "door" ? "Door Calculator" : "Window Calculator"}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleAddCalculator} disabled={!selectedCalculator}>
-          Add Calculator
-        </button>
-      </div>
-
-      <h2>Calculator List</h2>
-      <ul>
-        {Object.entries(quantities).map(([calculator, quantity]) => (
-          <li key={calculator}>
-            {calculator} Calculator - Quantity:{" "}
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => handleQuantityChange(calculator, e.target.value)}
-            />
-            <button onClick={() => handleRemoveCalculator(calculator)}>
-              Remove
-            </button>
-          </li>
+      <h2>Calculator Interface</h2>
+      <label>Select Calculator:</label>
+      <select onChange={handleCalculatorChange}>
+        <option value="">Select</option>
+        {availableCalculators.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
         ))}
-      </ul>
+      </select>
 
-      <h2>Grand Total: £{grandTotal.toFixed(2)}</h2>
+      {selectedCalculators.length > 0 && (
+        <div>
+          {renderSelectedCalculators()}
+          <button onClick={handleCalculate}>Calculate</button>
+        </div>
+      )}
+
+      {Object.keys(totalCosts).length > 0 && (
+        <div>
+          <h3>Grand Total: ${grandTotal}</h3>
+        </div>
+      )}
     </div>
   );
 };
