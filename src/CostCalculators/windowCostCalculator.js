@@ -1,4 +1,4 @@
-const windowCostCalculator = (numberOfDoors) => {
+const WindowCostCalculator = (numberOfDoors) => {
   const calculateCost = () => {
     const nailsCost = numberOfDoors * 2 * 0.5;
     const bracketsCost = numberOfDoors * 1.9;
@@ -13,4 +13,4 @@ const windowCostCalculator = (numberOfDoors) => {
   return calculateCost();
 };
 
-export default windowCostCalculator;
+export default WindowCostCalculator;
