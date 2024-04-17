@@ -1,3 +1,15 @@
+# About
+
+This repo contains a calculator that will calculate the cost of a quantity of doors and / or windows.
+
+Todo:
+- Add more product calculators
+- Add the individual components in a text field so they can be altered, and update price accordingly
+- Add decent UI
+- Add unit tests
+  Refactor code
+- Add the ability to print as an invoice
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
